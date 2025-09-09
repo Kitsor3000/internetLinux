@@ -1,0 +1,1 @@
+/// <reference scheduleTypes="vite/client" />
