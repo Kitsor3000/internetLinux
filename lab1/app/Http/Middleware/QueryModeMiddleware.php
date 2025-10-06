@@ -13,7 +13,7 @@ class QueryModeMiddleware
         $mode = $request->query('mode');
 
         if ($mode === 'debug') {
-            // Додаємо заголовок для debug режиму
+
             $request->headers->set('X-Debug-Mode', 'enabled');
         }
 
