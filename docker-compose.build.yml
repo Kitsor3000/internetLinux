@@ -1,11 +1,15 @@
-version: "3.9"
+version: '3.8'
 
 services:
   php:
-    image: '${PHP_IMAGE}'
     build:
       context: ./.docker/php
-      dockerfile: ./Dockerfile
       args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
+        PHP_IMAGE: ${PHP_IMAGE:-app/php}
+    image: ${PHP_IMAGE:-app/php}
+    container_name: missing_persons_php
+
+  nginx:
+    build: ./.docker/nginx
+    image: ${PHP_IMAGE:-app/php}-nginx
+    container_name: missing_persons_nginx
