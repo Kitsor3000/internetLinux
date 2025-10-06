@@ -1,17 +1,14 @@
 <?php
 
+use App\Http\Controllers\LabController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::middleware(['query.mode'])->group(function () {
+    Route::get('/lab', [LabController::class, 'index'])->name('lab.index');
+    Route::get('/lab/about', [LabController::class, 'about'])->name('lab.about');
+    Route::get('/lab/status', [LabController::class, 'status'])->name('lab.status');
+    Route::get('/lab/echo', [LabController::class, 'echo'])->name('lab.echo');
+});
 
 Route::get('/', function () {
     return view('welcome');
