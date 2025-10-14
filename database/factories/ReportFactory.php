@@ -11,9 +11,6 @@ class ReportFactory extends Factory
 {
     public function definition(): array
     {
-        $cities = ['Київ', 'Львів', 'Одеса', 'Харків', 'Дніпро', 'Запоріжжя', 'Вінниця', 'Житомир'];
-        $districts = ['Центральний', 'Шевченківський', 'Подільський', 'Печерський', 'Дарницький'];
-
         return [
             'missing_person_id' => MissingPerson::factory(),
             'user_id' => User::factory(),
@@ -27,8 +24,8 @@ class ReportFactory extends Factory
         ];
     }
 
-    // Додаткові стани фабрики
-    public function new()
+    // Додаткові стани фабрики - ВИПРАВЛЕНІ НАЗВИ
+    public function newlyCreated()
     {
         return $this->state(function (array $attributes) {
             return [
