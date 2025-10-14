@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MissingPersonController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,21 +20,27 @@ use Illuminate\Support\Facades\Route;
 // Головна сторінка - список зниклих осіб
 Route::get('/', [MissingPersonController::class, 'index'])->name('home');
 
-// Ресурсні маршрути для зниклих осіб (CRUD)
+// Ресурсні маршрути для зниклих осіб
 Route::resource('missing-persons', MissingPersonController::class);
 
-// Маршрути для категорій (тільки перегляд)
+// Маршрути для категорій
 Route::resource('categories', CategoryController::class)->only(['index', 'show']);
 
-// Маршрути для локацій (тільки перегляд)
-Route::resource('locations', LocationController::class)->only(['index', 'show']);
+// Маршрути для локацій
+Route::resource('locations', LocationController::class);
 
-// Маршрути для звітів про появи
-Route::resource('reports', ReportController::class)->only(['store', 'destroy']);
+// Сторінка пошуку
+Route::get('/search', [MissingPersonController::class, 'index'])->name('search');
 
-// Додаткові маршрути для звітів (прив'язані до конкретної особи)
-Route::post('missing-persons/{missing_person}/reports', [ReportController::class, 'store'])
-    ->name('missing-persons.reports.store');
+// Dashboard маршрути (для авторизованих користувачів)
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Сторінка "Про проект"
-Route::view('/about', 'about')->name('about');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';

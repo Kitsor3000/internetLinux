@@ -1,79 +1,127 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Система пошуку зниклих осіб')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 min-h-screen">
-<!-- Header -->
-<header class="bg-blue-800 text-white shadow-lg">
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center space-x-3 mb-4 md:mb-0">
-                <div class="bg-white text-blue-800 p-2 rounded-lg">
-                    <i class="fas fa-search text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold">
-                        <a href="{{ route('home') }}">FindMissing UA</a>
-                    </h1>
-                    <p class="text-sm">Система пошуку зниклих осіб</p>
+<body class="font-sans antialiased">
+<div class="min-h-screen bg-gray-100">
+    @include('layouts.navigation')
+
+    <!-- Page Heading -->
+    @if (isset($header))
+        <!-- Header -->
+        <header class="bg-blue-800 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                        <div class="bg-white text-blue-800 p-2 rounded-lg">
+                            <i class="fas fa-search text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">FindMissing UA</h1>
+                            <p class="text-sm">Система пошуку зниклих осіб</p>
+                        </div>
+                    </div>
+
+                    <nav class="flex flex-wrap justify-center gap-2">
+                        <a href="{{ route('home') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
+                            <i class="fas fa-home mr-2"></i>Головна
+                        </a>
+                        <a href="{{ route('categories.index') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
+                            <i class="fas fa-tags mr-2"></i>Категорії
+                        </a>
+                        <a href="{{ route('locations.index') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
+                            <i class="fas fa-map-marker-alt mr-2"></i>Локації
+                        </a>
+
+                        @auth
+                            <!-- Адмін меню -->
+                            <a href="{{ route('missing-persons.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
+                                <i class="fas fa-plus mr-2"></i>Додати особу
+                            </a>
+                            <a href="{{ route('locations.create') }}" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition">
+                                <i class="fas fa-map-pin mr-2"></i>Додати локацію
+                            </a>
+
+                            <!-- Dropdown меню користувача -->
+                            <div class="relative group">
+                                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition flex items-center">
+                                    <i class="fas fa-user mr-2"></i>{{ Auth::user()->name }}
+                                    <i class="fas fa-chevron-down ml-2"></i>
+                                </button>
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
+                                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-user-edit mr-2"></i>Профіль
+                                    </a>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                            <i class="fas fa-sign-out-alt mr-2"></i>Вийти
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Гостьове меню -->
+                            <a href="{{ route('login') }}" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Увійти
+                            </a>
+                            <a href="{{ route('register') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
+                                <i class="fas fa-user-plus mr-2"></i>Реєстрація
+                            </a>
+                        @endauth
+                    </nav>
                 </div>
             </div>
+        </header>
+    @endif
 
-            <nav class="flex flex-wrap justify-center gap-2">
-                <a href="{{ route('home') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
-                    <i class="fas fa-home mr-2"></i>Головна
-                </a>
-                <a href="{{ route('missing-persons.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
-                    <i class="fas fa-plus mr-2"></i>Додати особу
-                </a>
-                <a href="{{ route('categories.index') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
-                    <i class="fas fa-tags mr-2"></i>Категорії
-                </a>
-                <a href="{{ route('locations.index') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
-                    <i class="fas fa-map-marker-alt mr-2"></i>Локації
-                </a>
-                <a href="{{ route('about') }}" class="px-4 py-2 text-white hover:bg-blue-700 rounded-lg transition">
-                    <i class="fas fa-info-circle mr-2"></i>Про проект
-                </a>
-            </nav>
-        </div>
-    </div>
-</header>
+    <!-- Page Content -->
+    <main>
+        @if(isset($slot))
+            {{ $slot }}
+        @else
+            @yield('content')
+        @endif
+    </main>
+</div>
 
-<!-- Flash Messages -->
-@if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mx-4 mt-4">
-        <div class="container mx-auto">
-            <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-        </div>
-    </div>
-@endif
+<!-- Scripts для Font Awesome -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-@if(session('error'))
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-4 mt-4">
-        <div class="container mx-auto">
-            <i class="fas fa-exclamation-triangle mr-2"></i>{{ session('error') }}
-        </div>
-    </div>
-@endif
+<!-- Script для dropdown меню -->
+<script>
+    // Додаємо функціонал для dropdown меню
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdowns = document.querySelectorAll('.group');
 
-<!-- Main Content -->
-<main class="container mx-auto px-4 py-8">
-    @yield('content')
-</main>
+        dropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('button');
+            const menu = dropdown.querySelector('.hidden');
 
-<!-- Footer -->
-<footer class="bg-gray-800 text-white py-8 mt-12">
-    <div class="container mx-auto px-4 text-center">
-        <p class="text-lg font-semibold">&copy; {{ date('Y') }} FindMissing UA</p>
-        <p class="text-gray-400 mt-2">Система пошуку зниклих осіб</p>
-        <p class="text-sm text-gray-500 mt-4">Гаряча лінія: <strong>0 800 330 111</strong></p>
-    </div>
-</footer>
+            button.addEventListener('click', function() {
+                menu.classList.toggle('hidden');
+            });
+
+            // Закриваємо меню при кліку поза ним
+            document.addEventListener('click', function(event) {
+                if (!dropdown.contains(event.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class MissingPersonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        // Дозволяємо перегляд всім, але редагування тільки авторизованим
+        $this->middleware('auth')->except(['index', 'show']);
+    }
     public function index()
     {
         $missingPeople = MissingPerson::with(['lastLocation', 'categories', 'user'])
@@ -27,6 +29,7 @@ class MissingPersonController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', MissingPerson::class);
         $categories = Category::all();
         $locations = Location::all();
         return view('missing-persons.create', compact('categories', 'locations'));
@@ -78,6 +81,8 @@ class MissingPersonController extends Controller
      */
     public function show(MissingPerson $missingPerson)
     {
+
+
         $missingPerson->load(['lastLocation', 'categories', 'reports.sightingLocation', 'user']);
         return view('missing-persons.show', compact('missingPerson'));
     }
@@ -87,6 +92,7 @@ class MissingPersonController extends Controller
      */
     public function edit(MissingPerson $missingPerson)
     {
+        $this->authorize('update', $missingPerson);
         $categories = Category::all();
         $locations = Location::all();
         return view('missing-persons.edit', compact('missingPerson', 'categories', 'locations'));
@@ -97,6 +103,7 @@ class MissingPersonController extends Controller
      */
     public function update(Request $request, MissingPerson $missingPerson)
     {
+        $this->authorize('update', $missingPerson);
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -138,6 +145,8 @@ class MissingPersonController extends Controller
      */
     public function destroy(MissingPerson $missingPerson)
     {
+
+        $this->authorize('delete', $missingPerson);
         // Видаляємо фото
         if ($missingPerson->photo_path) {
             Storage::disk('public')->delete($missingPerson->photo_path);
