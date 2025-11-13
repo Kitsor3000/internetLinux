@@ -3,39 +3,47 @@
 @section('title', 'Кошик')
 
 @section('content')
-<h1 class="text-3xl font-bold mb-6">Кошик</h1>
+
+<h1 class="text-4xl font-bold mb-8">Кошик</h1>
 
 @if(empty($cart))
-    <p class="text-gray-500 text-lg">Кошик порожній.</p>
+    <p class="text-gray-600 text-xl">Ваш кошик порожній.</p>
+
 @else
 
-<table class="w-full bg-white shadow rounded">
-    <tr class="border-b">
-        <th class="p-3 text-left">Товар</th>
-        <th class="p-3">Кількість</th>
-        <th class="p-3">Ціна</th>
-        <th class="p-3">Разом</th>
-        <th></th>
-    </tr>
+<div class="bg-white shadow rounded-xl overflow-hidden">
 
-    @foreach($cart as $id => $item)
-        <tr class="border-b">
-            <td class="p-3">{{ $item['name'] }}</td>
-            <td class="text-center">{{ $item['quantity'] }}</td>
-            <td class="text-center">{{ $item['price'] }} ₴</td>
-            <td class="text-center">{{ $item['price'] * $item['quantity'] }} ₴</td>
-            <td class="p-3">
-                <a href="{{ route('cart.remove', $id) }}" class="text-red-600">Видалити</a>
+    <table class="w-full">
+        <tr class="bg-gray-100 border-b">
+            <th class="p-4 text-left">Товар</th>
+            <th class="p-4">К-сть</th>
+            <th class="p-4">Ціна</th>
+            <th class="p-4">Разом</th>
+            <th></th>
+        </tr>
+
+        @foreach($cart as $id => $item)
+        <tr class="border-b hover:bg-gray-50">
+            <td class="p-4">{{ $item['name'] }}</td>
+            <td class="p-4 text-center">{{ $item['quantity'] }}</td>
+            <td class="p-4 text-center">{{ $item['price'] }} ₴</td>
+            <td class="p-4 text-center">{{ $item['price'] * $item['quantity'] }} ₴</td>
+            <td class="p-4 text-center">
+                <a href="{{ route('cart.remove', $id) }}" class="text-red-600 hover:underline">Видалити</a>
             </td>
         </tr>
-    @endforeach
-</table>
+        @endforeach
+    </table>
 
-<p class="text-xl font-bold mt-4">Загальна сума: {{ $total }} ₴</p>
+</div>
 
-<a href="{{ route('orders.checkout') }}" class="inline-block bg-blue-600 text-white px-6 py-2 mt-4 rounded">
+<p class="text-right text-3xl font-bold mt-6">Сума: {{ $total }} ₴</p>
+
+<a href="{{ route('orders.checkout') }}"
+   class="inline-block mt-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-3 rounded-lg text-xl hover:opacity-90 float-right">
     Оформити замовлення
 </a>
 
 @endif
+
 @endsection
