@@ -8,7 +8,9 @@
     <!-- Фото -->
     <div>
         @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" class="shadow rounded-xl">
+           <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+
+
         @else
             <div class="h-80 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500">
                 Нема фото

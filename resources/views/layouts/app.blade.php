@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Магазин інструментів')</title>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 <body class="bg-gray-100">
 
